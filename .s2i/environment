@@ -1,4 +1,4 @@
 APP_CONFIG=setup.py
 FLASK_APP=sokannonser
 FLASK_ENV=development
-APP_FILE=uwsgi.ini
+APP_FILE=startFlask.sh
