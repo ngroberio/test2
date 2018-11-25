@@ -3,7 +3,7 @@
 // Run this pipeline on the custom Jenkins Slave ('jobtech-appdev')
 // Jenkins Slaves have JDK and Maven already installed
 // 'jobtech-appdev' has skopeo installed as well.
-node('jobtech-pipeline') {
+node{
 
   // Define Maven Command. Make sure it points to the correct
   // settings for our Nexus installation (use the service to
