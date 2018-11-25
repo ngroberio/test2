@@ -76,7 +76,7 @@ node{
   }
 
   // Deploy the built image to the Development Environment.
-  stage('Deploy to Dev') {
+  stage('Deploy to Dev env') {
     echo "Deploying container image to Development Project"
     // TBD
     // Update the Image on the Development Deployment Config
@@ -93,18 +93,48 @@ node{
       //openshiftVerifyService namespace: 'xyz-tasks-dev', svcName: 'tasks', verbose: 'false'
   }
 
+  // Deploy the built image to the Test Environment.
+  stage('Deploy to Test env') {
+    echo "Deploying container image to Development Project"
+    // TBD
+    // Update the Image on the Development Deployment Config
+      //sh "oc set image dc/tasks tasks=docker-registry.default.svc:5000/xyz-tasks-dev/tasks:${devTag} -n xyz-tasks-dev"
+
+      // Update the Config Map which contains the users for the Tasks application
+      //sh "oc delete configmap tasks-config -n xyz-tasks-dev --ignore-not-found=true"
+      //sh "oc create configmap tasks-config --from-file=./configuration/application-users.properties --from-file=./configuration/application-roles.properties -n xyz-tasks-dev"
+
+      // Deploy the development application.
+      // Replace xyz-tasks-dev with the name of your production project
+      //openshiftDeploy depCfg: 'tasks', namespace: 'xyz-tasks-dev', verbose: 'false', waitTime: '', waitUnit: 'sec'
+      //openshiftVerifyDeployment depCfg: 'tasks', namespace: 'xyz-tasks-dev', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '', waitUnit: 'sec'
+      //openshiftVerifyService namespace: 'xyz-tasks-dev', svcName: 'tasks', verbose: 'false'
+  }
+  
   // Run Unit Tests in the Development Environment.
   stage('Dev Unit Tests') {
     echo "Running Dev Unit Tests"
     // TBD
   }
 
+  // Run Unit Tests in the Test Environment.
+  stage('Dev env Unit Tests') {
+    echo "Running Dev Unit Tests"
+    // TBD
+  }
+  
   // Run Integration Tests in the Development Environment.
   stage('Dev Integration Tests') {
     echo "Running Dev Integration Tests"
     // TBD
   }
 
+  // Run Integration Tests in the Test Environment.
+  stage('Test env Integration Tests') {
+    echo "Running Test env Integration Tests"
+    // TBD
+  }
+  
   // Copy Image to Nexus Docker Registry
   stage('Copy Image to Nexus Docker Registry') {
     echo "Copy image to Nexus Docker Registry"
