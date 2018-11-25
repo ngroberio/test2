@@ -1,2 +1,4 @@
 APP_CONFIG=setup.py
-APP_FILE=uWsgi.ini
+FLASK_APP=sokannonser
+FLASK_ENV=development
+APP_FILE=uwsgi.ini
