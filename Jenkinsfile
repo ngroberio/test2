@@ -5,18 +5,6 @@
 // 'jobtech-appdev' has skopeo installed as well.
 node{
 
-  // Define Maven Command. Make sure it points to the correct
-  // settings for our Nexus installation (use the service to
-  // bypass the router). The file nexus_openshift_settings.xml
-  // needs to be in the Source Code repository.
-  //def mvnCmd = "mvn -s ./nexus_openshift_settings.xml"
-
-  // Checkout Source Code
-  stage('Checkout Source') {
-    // TBD
-    checkout scm
-  }
-
   // The following variables need to be defined at the top level
   // and not inside the scope of a stage - otherwise they would not
   // be accessible from other stages.
@@ -28,18 +16,10 @@ node{
   // Set the tag for the production image: version
   def prodTag = "${version}"
 
-  // Build Python Code
-  stage('Build Python Code') {
-    echo "Building version ${version}"
-
-    // Command to build the code and skip tests
-    //sh "${mvnCmd} clean package -DskipTests"
-  }
-
-  // Run the unit tests
-  stage('Unit Tests') {
-    echo "Running Unit Tests"
+  // Checkout Source Code
+  stage('Checkout Source') {
     // TBD
+    checkout scm
   }
 
   // Call SonarQube for Code Analysis
