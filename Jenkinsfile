@@ -11,7 +11,7 @@ node{
   def version    = "1"
 
   // Set the tag for the development image: version + build number
-  def devTag  = "${version}-${BUILD_NUMBER}"
+  def devTag  = "${version}-${BRANCH_NAME}-${BUILD_NUMBER}"
 
   // Set the tag for the production image: version
   def prodTag = "${version}"
