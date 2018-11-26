@@ -130,6 +130,7 @@ node('maven-appdev'){
   def activeApp = ""
 
   stage('A/B Production Deployment') {
+      input "Deploy to Production?"
 
       activeApp = sh(returnStdout: true, script: "oc get route sokapi -n jt-prod -o jsonpath='{ .spec.to.name }'").trim()
       if (activeApp == "sokapi-a") {
