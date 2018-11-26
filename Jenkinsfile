@@ -71,7 +71,7 @@ node('maven-appdev'){
       //sh "oc create configmap tasks-config --from-file=./configuration/application-users.properties --from-file=./configuration/application-roles.properties -n jt-dev"
 
       // Deploy the development application.
-      openshiftDeploy depCfg: 'sokapi', namespace: 'jd-dev', verbose: 'false', waitTime: '', waitUnit: 'sec'
+      openshiftDeploy depCfg: 'sokapi', namespace: 'jt-dev', verbose: 'false', waitTime: '', waitUnit: 'sec'
       openshiftVerifyDeployment depCfg: 'sokapi', namespace: 'jt-dev', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '', waitUnit: 'sec'
       openshiftVerifyService namespace: 'jt-dev', svcName: 'sokapi', verbose: 'false'
   }
