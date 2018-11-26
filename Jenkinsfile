@@ -8,7 +8,7 @@ node{
   // The following variables need to be defined at the top level
   // and not inside the scope of a stage - otherwise they would not
   // be accessible from other stages.
-  def version    = "t1"
+  def version    = "1"
 
   // Set the tag for the development image: version + build number
   def devTag  = "${version}-${BUILD_NUMBER}"
