@@ -39,7 +39,7 @@ node('maven-appdev'){
 
   // Build the OpenShift Image in OpenShift and tag it.
   stage('Build and Tag OpenShift Image') {
-    echo "Building OpenShift container image tasks:${devTag}"
+    echo "Building OpenShift container image sokapi:${devTag}"
 
    // Start Binary Build in OpenShift using the file we just published
    sh "oc delete dc sokapi -n jt-dev"
@@ -120,7 +120,7 @@ node('maven-appdev'){
     //sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds openshift:\$(oc whoami -t) --dest-creds admin:admin123 docker://docker-registry.default.svc.cluster.local:5000/jt-dev/sokapi:${devTag} docker://nexus-registry.nexus.svc.cluster.local:5000/sokapi:${devTag}"
 
     // Tag the built image with the production tag.
-    //openshiftTag alias: 'false', destStream: 'tasks', destTag: prodTag, destinationNamespace: 'xyz-tasks-dev', namespace: 'xyz-tasks-dev', srcStream: 'tasks', srcTag: devTag, verbose: 'false'
+    //openshiftTag alias: 'false', destStream: 'sokapi', destTag: prodTag, destinationNamespace: 'jt-prod', namespace: 'jt-test', srcStream: 'sokapi', srcTag: devTag, verbose: 'false'
   }
 
   // A/B Deployment into Production
@@ -139,7 +139,7 @@ node('maven-appdev'){
       echo "Destination Application: " + destApp
 
       // Update the Image on the Production Deployment Config
-      sh "oc set image dc/${destApp} ${destApp}=docker-registry.default.svc:5000/jt-dev/sokapi:${prodTag} -n jt-prod"
+      sh "oc set image dc/${destApp} ${destApp}=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-prod"
 
       // Update the Config Map which contains the users for the Tasks application
       //sh "oc delete configmap ${destApp}-config -n xyz-tasks-prod --ignore-not-found=true"
