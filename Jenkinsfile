@@ -94,7 +94,7 @@ node('maven-appdev'){
     echo "Deploying image to Test Env Project"
 
     // Update the Image on the Development Deployment Config
-      sh "oc set image dc/sokapi sokapi=docker-registry.default.svc:5000/jt-test/sokapi:${devTag} -n jt-test"
+      sh "oc set image dc/sokapi sokapi=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-test"
 
       // Update the Config Map which contains the users for the Tasks application
       //sh "oc delete configmap tasks-config -n jt-test --ignore-not-found=true"
