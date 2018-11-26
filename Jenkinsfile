@@ -64,7 +64,7 @@ node('maven-appdev'){
     echo "Deploying container image to Development Env Project"
 
     // Update the Image on the Development Deployment Config
-    sh "oc set image dc/sokapi tasks=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-dev"
+    sh "oc set image dc/sokapi sokapi=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-dev"
 
       // Update the Config Map which contains the users for the Tasks application
       //sh "oc delete configmap tasks-config -n jt-dev --ignore-not-found=true"
