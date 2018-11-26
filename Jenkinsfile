@@ -3,7 +3,7 @@
 // Run this pipeline on the custom Jenkins Slave ('jobtech-appdev')
 // Jenkins Slaves have JDK and Maven already installed
 // 'jobtech-appdev' has skopeo installed as well.
-node{
+node('maven-appdev'){
 
   // The following variables need to be defined at the top level
   // and not inside the scope of a stage - otherwise they would not
@@ -43,12 +43,14 @@ node{
     echo "Building OpenShift container image tasks:${devTag}"
 
    // Start Binary Build in OpenShift using the file we just published
-   sh "oc new-build --binary=true --name=sokapi jt-dev/sokapi:${devTag} -n jt-dev"
+   sh "oc new-build --binary=true --name=sokapi jt-dev/sokapi:latest -n jt-dev"
+   sh "oc new-app jt-dev/sokapi:${devTag} --name=sokapi --allow-missing-imagestream-tags=true -n jt-dev"
+   sh "oc set triggers dc/sokapi --remove-all -n jt-dev"
+
 
      // The filename is openshift-tasks.war in the 'target' directory of your current
      // Jenkins workspace
-     // Replace xyz-tasks-dev with the name of your dev project
-     //sh "oc start-build tasks --follow --from-file=./target/openshift-tasks.war -n xyz-tasks-dev"
+     //sh "oc start-build tasks --follow --from-file=./target/openshift-tasks.war -n jt-dev"
 
      // OR use the file you just published into Nexus:
      // sh "oc start-build sokapi --follow --from-file=http://nexus3.xyz-nexus.svc.cluster.local:8081/repository/releases/jobtehc/sokannonser/api/${version}/sokapi-${version}.war -n jt-dev"
