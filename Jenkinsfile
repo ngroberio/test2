@@ -12,7 +12,7 @@ node{
 
   // Set the tag for the development image: version + build number
   def devTag  = "${version}-${BUILD_NUMBER}"
- 
+
   // Set the tag for the production image: version
   def prodTag = "${version}"
 
@@ -41,36 +41,37 @@ node{
   // Build the OpenShift Image in OpenShift and tag it.
   stage('Build and Tag OpenShift Image') {
     echo "Building OpenShift container image tasks:${devTag}"
-   // TBD
+
    // Start Binary Build in OpenShift using the file we just published
+   oc new-build --binary=true --name="sokapi" jt-dev/sokapi:${devTag} -n jt-dev
+
      // The filename is openshift-tasks.war in the 'target' directory of your current
      // Jenkins workspace
      // Replace xyz-tasks-dev with the name of your dev project
      //sh "oc start-build tasks --follow --from-file=./target/openshift-tasks.war -n xyz-tasks-dev"
 
      // OR use the file you just published into Nexus:
-     // sh "oc start-build tasks --follow --from-file=http://nexus3.xyz-nexus.svc.cluster.local:8081/repository/releases/org/jboss/quickstarts/eap/tasks/${version}/tasks-${version}.war -n xyz-tasks-dev"
+     // sh "oc start-build sokapi --follow --from-file=http://nexus3.xyz-nexus.svc.cluster.local:8081/repository/releases/jobtehc/sokannonser/api/${version}/sokapi-${version}.war -n jt-dev"
 
      // Tag the image using the devTag
-     //openshiftTag alias: 'false', destStream: 'tasks', destTag: devTag, destinationNamespace: 'xyz-tasks-dev', namespace: 'xyz-tasks-dev', srcStream: 'tasks', srcTag: 'latest', verbose: 'false'
+     //openshiftTag alias: 'false', destStream: 'sokapi', destTag: devTag, destinationNamespace: 'jt-dev', namespace: 'jt-dev', srcStream: 'sokapi', srcTag: 'latest', verbose: 'false'
   }
 
   // Deploy the built image to the Development Environment.
   stage('Deploy to Dev Env') {
     echo "Deploying container image to Development Env Project"
-    // TBD
+
     // Update the Image on the Development Deployment Config
-      //sh "oc set image dc/tasks tasks=docker-registry.default.svc:5000/xyz-tasks-dev/tasks:${devTag} -n xyz-tasks-dev"
+    sh "oc set image dc/sokapi tasks=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-dev"
 
       // Update the Config Map which contains the users for the Tasks application
-      //sh "oc delete configmap tasks-config -n xyz-tasks-dev --ignore-not-found=true"
-      //sh "oc create configmap tasks-config --from-file=./configuration/application-users.properties --from-file=./configuration/application-roles.properties -n xyz-tasks-dev"
+      //sh "oc delete configmap tasks-config -n jt-dev --ignore-not-found=true"
+      //sh "oc create configmap tasks-config --from-file=./configuration/application-users.properties --from-file=./configuration/application-roles.properties -n jt-dev"
 
       // Deploy the development application.
-      // Replace xyz-tasks-dev with the name of your production project
-      //openshiftDeploy depCfg: 'tasks', namespace: 'xyz-tasks-dev', verbose: 'false', waitTime: '', waitUnit: 'sec'
-      //openshiftVerifyDeployment depCfg: 'tasks', namespace: 'xyz-tasks-dev', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '', waitUnit: 'sec'
-      //openshiftVerifyService namespace: 'xyz-tasks-dev', svcName: 'tasks', verbose: 'false'
+      openshiftDeploy depCfg: 'sokapi', namespace: 'jd-dev', verbose: 'false', waitTime: '', waitUnit: 'sec'
+      openshiftVerifyDeployment depCfg: 'sokapi', namespace: 'jt-dev', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '', waitUnit: 'sec'
+      openshiftVerifyService namespace: 'jt-dev', svcName: 'sokapi', verbose: 'false'
   }
 
   // Run Unit Tests on Development Environment.
@@ -78,13 +79,13 @@ node{
     echo "Running Dev Unit Tests"
     // TBD
   }
- 
+
     // Run Unit Tests on Development Environment.
   stage('Dev Env Integration Tests') {
     echo "Running Dev Integration Tests"
     // TBD
   }
-  
+
    // Deploy the built image to the Test Environment.
   stage('Deploy to Test env') {
     echo "Deploying image to Test Env Project"
@@ -108,13 +109,13 @@ node{
     echo "Running Test Env Unit Tests"
     // TBD
   }
-  
+
   // Run Integration Tests on Test Environment.
   stage('Test Env Integration Tests') {
     echo "Running Test env Integration Tests"
     // TBD
   }
-  
+
   // Copy Image to Nexus Docker Registry
   stage('Copy Image to Nexus Docker Registry') {
     echo "Copy image to Nexus Docker Registry"
