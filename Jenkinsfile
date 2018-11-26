@@ -76,7 +76,7 @@ node('maven-appdev'){
       echo "[openshiftVerifyDeployment]"
       openshiftVerifyDeployment depCfg: 'sokapi', namespace: 'jt-dev', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '15', waitUnit: 'sec'
       echo "[openshiftVerifyDeployment]"
-      openshiftVerifyService namespace: 'jt-dev', svcName: 'sokapi', verbose: 'false'
+      openshiftVerifyService namespace: 'jt-dev', svcName: 'sokapi', verbose: 'false', waitTime: '15', waitUnit: 'sec'
   }
 
   // Run Unit Tests on Development Environment.
