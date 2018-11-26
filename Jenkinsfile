@@ -41,20 +41,13 @@ node('maven-appdev'){
   stage('Build and Tag OpenShift Image') {
     echo "Building OpenShift container image sokapi:${devTag}"
 
-   // Start Binary Build in OpenShift using the file we just published
-   sh "oc delete dc sokapi -n jt-dev"
-   sh "oc new-app jt-dev/sokapi:${devTag} --name=sokapi --allow-missing-imagestream-tags=true -n jt-dev"
-   sh "oc set triggers dc/sokapi --remove-all -n jt-dev"
+    // Start Binary Build in OpenShift using the file we just published
+    sh "oc delete dc sokapi -n jt-dev"
+    sh "oc new-app jt-dev/sokapi:${devTag} --name=sokapi --allow-missing-imagestream-tags=true -n jt-dev"
+    sh "oc set triggers dc/sokapi --remove-all -n jt-dev"
 
-     // The filename is openshift-tasks.war in the 'target' directory of your current
-     // Jenkins workspace
-     //sh "oc start-build tasks --follow --from-file=./target/openshift-tasks.war -n jt-dev"
-
-     // OR use the file you just published into Nexus:
-     // sh "oc start-build sokapi --follow --from-file=http://nexus3.xyz-nexus.svc.cluster.local:8081/repository/releases/jobtehc/sokannonser/api/${version}/sokapi-${version}.war -n jt-dev"
-
-     // Tag the image using the devTag
-     openshiftTag alias: 'false', destStream: 'sokapi', destTag: devTag, destinationNamespace: 'jt-dev', namespace: 'jt-dev', srcStream: 'sokapi', srcTag: 'latest', verbose: 'false'
+    // Tag the image using the devTag
+    openshiftTag alias: 'false', destStream: 'sokapi', destTag: devTag, destinationNamespace: 'jt-dev', namespace: 'jt-dev', srcStream: 'sokapi', srcTag: 'latest', verbose: 'false'
   }
 
   // Deploy the built image to the Development Environment.
@@ -141,10 +134,6 @@ node('maven-appdev'){
 
       // Update the Image on the Production Deployment Config
       sh "oc set image dc/${destApp} ${destApp}=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-prod"
-
-      // Update the Config Map which contains the users for the Tasks application
-      //sh "oc delete configmap ${destApp}-config -n xyz-tasks-prod --ignore-not-found=true"
-      //sh "oc create configmap ${destApp}-config --from-file=./configuration/application-users.properties --from-file=./configuration/application-roles.properties -n jt-prod"
 
       // Deploy the inactive application.
       openshiftDeploy depCfg: destApp, namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
