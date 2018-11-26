@@ -155,7 +155,7 @@ node('maven-appdev'){
     input "Switch Production?"
 
     echo "Switching Production application to ${destApp}."
-    sh 'oc patch route ${destApp} -n jt-prod -p \'{"spec":{"to":{"name":"' + destApp + '"}}}\''
+    sh 'oc patch route sokapi -n jt-prod -p \'{"spec":{"to":{"name":"' + destApp + '"}}}\''
   }
 
 }
