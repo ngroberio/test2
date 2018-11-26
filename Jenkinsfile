@@ -14,18 +14,17 @@ node('maven-appdev'){
   def devTag  = "${version}-${BUILD_NUMBER}"
 
   // Set the tag for the production image: version
-  def prodTag = "${version}"
+  def prodTag = "p-${devTag}"
 
   // Checkout Source Code
   stage('Checkout Source') {
-    // TBD
     checkout scm
   }
 
   // Call SonarQube for Code Analysis
   stage('Code Analysis') {
     echo "Running Code Analysis"
-    // TBD
+
     // Replace xyz-sonarqube with the name of your Sonarqube project
     //sh "${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube-xyz-sonarqube.apps.$GUID.example.opentlc.com/ -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
   }
@@ -33,7 +32,7 @@ node('maven-appdev'){
   // Publish the built code file to Nexus
   stage('Publish to Nexus') {
     echo "Publish to Nexus"
-    // TBD
+
     // Replace xyz-nexus with the name of your Nexus project
     //sh "${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3.xyz-nexus.svc.cluster.local:8081/repository/releases"
   }
@@ -46,7 +45,6 @@ node('maven-appdev'){
    sh "oc delete dc sokapi -n jt-dev"
    sh "oc new-app jt-dev/sokapi:${devTag} --name=sokapi --allow-missing-imagestream-tags=true -n jt-dev"
    sh "oc set triggers dc/sokapi --remove-all -n jt-dev"
-
 
      // The filename is openshift-tasks.war in the 'target' directory of your current
      // Jenkins workspace
@@ -94,19 +92,18 @@ node('maven-appdev'){
    // Deploy the built image to the Test Environment.
   stage('Deploy to Test env') {
     echo "Deploying image to Test Env Project"
-    // TBD
+
     // Update the Image on the Development Deployment Config
-      //sh "oc set image dc/tasks tasks=docker-registry.default.svc:5000/xyz-tasks-dev/tasks:${devTag} -n xyz-tasks-dev"
+      //sh "oc set image dc/tasks tasks=docker-registry.default.svc:5000/jt-test/tasks:${devTag} -n jt-test"
 
       // Update the Config Map which contains the users for the Tasks application
-      //sh "oc delete configmap tasks-config -n xyz-tasks-dev --ignore-not-found=true"
-      //sh "oc create configmap tasks-config --from-file=./configuration/application-users.properties --from-file=./configuration/application-roles.properties -n xyz-tasks-dev"
+      //sh "oc delete configmap tasks-config -n jt-test --ignore-not-found=true"
+      //sh "oc create configmap tasks-config --from-file=./configuration/application-users.properties --from-file=./configuration/application-roles.properties -n jt-test"
 
-      // Deploy the development application.
-      // Replace xyz-tasks-dev with the name of your production project
-      //openshiftDeploy depCfg: 'tasks', namespace: 'xyz-tasks-dev', verbose: 'false', waitTime: '', waitUnit: 'sec'
-      //openshiftVerifyDeployment depCfg: 'tasks', namespace: 'xyz-tasks-dev', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '', waitUnit: 'sec'
-      //openshiftVerifyService namespace: 'xyz-tasks-dev', svcName: 'tasks', verbose: 'false'
+      // Deploy the test application.
+      openshiftDeploy depCfg: 'sokapi', namespace: 'jt-test', verbose: 'false', waitTime: '', waitUnit: 'sec'
+      openshiftVerifyDeployment depCfg: 'sokapi', namespace: 'jt-test', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '', waitUnit: 'sec'
+      //openshiftVerifyService namespace: 'jt-test', svcName: 'sokapi', verbose: 'false'
   }
 
  // Run Unit Tests on Test Environment.
@@ -132,50 +129,40 @@ node('maven-appdev'){
     //openshiftTag alias: 'false', destStream: 'tasks', destTag: prodTag, destinationNamespace: 'xyz-tasks-dev', namespace: 'xyz-tasks-dev', srcStream: 'tasks', srcTag: devTag, verbose: 'false'
   }
 
-  // Blue/Green Deployment into Production
+  // A/B Deployment into Production
   // -------------------------------------
   // Do not activate the new version yet.
-  def destApp   = "tasks-green"
+  def destApp   = "sokapi-a"
   def activeApp = ""
 
   stage('A/B Production Deployment') {
-      // Replace xyz-tasks-dev and xyz-tasks-prod with
-      // your project names
-      //activeApp = sh(returnStdout: true, script: "oc get route tasks -n xyz-tasks-prod -o jsonpath='{ .spec.to.name }'").trim()
-      //if (activeApp == "tasks-green") {
-        //destApp = "tasks-blue"
-      //}
+
+
+      activeApp = sh(returnStdout: true, script: "oc get route sokapi -n jt-prod -o jsonpath='{ .spec.to.name }'").trim()
+      if (activeApp == "sokapi-a") {
+        destApp = "sokapi-b"
+      }
       echo "Active Application:      " + activeApp
       echo "Destination Application: " + destApp
 
       // Update the Image on the Production Deployment Config
-      //sh "oc set image dc/${destApp} ${destApp}=docker-registry.default.svc:5000/xyz-tasks-dev/tasks:${prodTag} -n xyz-tasks-prod"
+      sh "oc set image dc/${destApp} ${destApp}=docker-registry.default.svc:5000/jt-dev/sokapi:${prodTag} -n jt-prod"
 
       // Update the Config Map which contains the users for the Tasks application
       //sh "oc delete configmap ${destApp}-config -n xyz-tasks-prod --ignore-not-found=true"
-      //sh "oc create configmap ${destApp}-config --from-file=./configuration/application-users.properties --from-file=./configuration/application-roles.properties -n xyz-tasks-prod"
+      //sh "oc create configmap ${destApp}-config --from-file=./configuration/application-users.properties --from-file=./configuration/application-roles.properties -n jt-prod"
 
       // Deploy the inactive application.
-      // Replace xyz-tasks-prod with the name of your production project
-      //openshiftDeploy depCfg: destApp, namespace: 'xyz-tasks-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
-      //openshiftVerifyDeployment depCfg: destApp, namespace: 'xyz-tasks-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
-      //openshiftVerifyService namespace: 'xyz-tasks-prod', svcName: destApp, verbose: 'false'
+      openshiftDeploy depCfg: destApp, namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
+      openshiftVerifyDeployment depCfg: destApp, namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
+      //openshiftVerifyService namespace: 'jt-prod', svcName: destApp, verbose: 'false'
   }
 
   stage('Switch over to new Version') {
     input "Switch Production?"
 
     echo "Switching Production application to ${destApp}."
-    // Replace xyz-tasks-prod with the name of your production project
-   // sh 'oc patch route tasks -n xyz-tasks-prod -p \'{"spec":{"to":{"name":"' + destApp + '"}}}\''
+    sh 'oc patch route sokapi -n jt-prod -p \'{"spec":{"to":{"name":"' + destApp + '"}}}\''
   }
 
-}
-
-// Convenience Functions to read variables from the pom.xml
-// Do not change anything below this line.
-// --------------------------------------------------------
-def getVersionFromPom(pom) {
-  def matcher = readFile(pom) =~ '<version>(.+)</version>'
-  matcher ? matcher[0][1] : null
 }
