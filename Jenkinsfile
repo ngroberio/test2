@@ -56,7 +56,7 @@ node('maven-appdev'){
      // sh "oc start-build sokapi --follow --from-file=http://nexus3.xyz-nexus.svc.cluster.local:8081/repository/releases/jobtehc/sokannonser/api/${version}/sokapi-${version}.war -n jt-dev"
 
      // Tag the image using the devTag
-     //openshiftTag alias: 'false', destStream: 'sokapi', destTag: devTag, destinationNamespace: 'jt-dev', namespace: 'jt-dev', srcStream: 'sokapi', srcTag: 'latest', verbose: 'false'
+     openshiftTag alias: 'false', destStream: 'sokapi', destTag: devTag, destinationNamespace: 'jt-dev', namespace: 'jt-dev', srcStream: 'sokapi', srcTag: 'latest', verbose: 'false'
   }
 
   // Deploy the built image to the Development Environment.
