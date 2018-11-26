@@ -43,7 +43,7 @@ node{
     echo "Building OpenShift container image tasks:${devTag}"
 
    // Start Binary Build in OpenShift using the file we just published
-   oc new-build --binary=true --name="sokapi" jt-dev/sokapi:${devTag} -n jt-dev
+   sh "oc new-build --binary=true --name=sokapi jt-dev/sokapi:${devTag} -n jt-dev"
 
      // The filename is openshift-tasks.war in the 'target' directory of your current
      // Jenkins workspace
