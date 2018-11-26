@@ -93,12 +93,8 @@ node('maven-appdev'){
   stage('Deploy to Test env') {
     echo "Deploying image to Test Env Project"
 
-    // Update the Image on the Development Deployment Config
+      // Update the Image on the Development Deployment Config
       sh "oc set image dc/sokapi sokapi=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-test"
-
-      // Update the Config Map which contains the users for the Tasks application
-      //sh "oc delete configmap tasks-config -n jt-test --ignore-not-found=true"
-      //sh "oc create configmap tasks-config --from-file=./configuration/application-users.properties --from-file=./configuration/application-roles.properties -n jt-test"
 
       // Deploy the test application.
       openshiftDeploy depCfg: 'sokapi', namespace: 'jt-test', verbose: 'false', waitTime: '', waitUnit: 'sec'
@@ -121,11 +117,9 @@ node('maven-appdev'){
   // Copy Image to Nexus Docker Registry
   stage('Copy Image to Nexus Docker Registry') {
     echo "Copy image to Nexus Docker Registry"
-    // TBD
-    //sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds openshift:\$(oc whoami -t) --dest-creds admin:admin123 docker://docker-registry.default.svc.cluster.local:5000/xyz-tasks-dev/tasks:${devTag} docker://nexus-registry.xyz-nexus.svc.cluster.local:5000/tasks:${devTag}"
+    //sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds openshift:\$(oc whoami -t) --dest-creds admin:admin123 docker://docker-registry.default.svc.cluster.local:5000/jt-dev/sokapi:${devTag} docker://nexus-registry.nexus.svc.cluster.local:5000/sokapi:${devTag}"
 
     // Tag the built image with the production tag.
-    // Replace xyz-tasks-dev with the name of your dev project
     //openshiftTag alias: 'false', destStream: 'tasks', destTag: prodTag, destinationNamespace: 'xyz-tasks-dev', namespace: 'xyz-tasks-dev', srcStream: 'tasks', srcTag: devTag, verbose: 'false'
   }
 
@@ -136,7 +130,6 @@ node('maven-appdev'){
   def activeApp = ""
 
   stage('A/B Production Deployment') {
-
 
       activeApp = sh(returnStdout: true, script: "oc get route sokapi -n jt-prod -o jsonpath='{ .spec.to.name }'").trim()
       if (activeApp == "sokapi-a") {
@@ -162,7 +155,7 @@ node('maven-appdev'){
     input "Switch Production?"
 
     echo "Switching Production application to ${destApp}."
-    sh 'oc patch route sokapi -n jt-prod -p \'{"spec":{"to":{"name":"' + destApp + '"}}}\''
+    sh 'oc patch route ${destApp} -n jt-prod -p \'{"spec":{"to":{"name":"' + destApp + '"}}}\''
   }
 
 }
