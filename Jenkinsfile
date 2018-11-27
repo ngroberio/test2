@@ -24,9 +24,12 @@ node('jobtech-appdev'){
   // Call SonarQube for Code Analysis
   stage('Code Analysis') {
     echo "Running Code Analysis"
-
-    // Replace xyz-sonarqube with the name of your Sonarqube project
-    //sh "${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube-xyz-sonarqube.apps.$GUID.example.opentlc.com/ -Dsonar.projectName=${JOB_BASE_NAME}-${devTag}"
+    // requires SonarQube Scanner 2.8+
+    def scannerHome = tool 'SonarQube Scanner 2.8';
+    echo "Scanner Home: ${scannerHome}"
+    withSonarQubeEnv('My SonarQube Server') {
+      sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=. -Dsonar.host.url=http://sonarqube-jt-sonarqube.dev.services.jtech.se -Dsonar.login=bf3aa9032fea226a8174aed51e4b6df8f318e80d"
+    }
   }
 
   // Publish the built code file to Nexus
