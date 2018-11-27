@@ -24,6 +24,7 @@ node('jobtech-appdev'){
   // Call SonarQube for Code Analysis
   stage('Code Analysis') {
     echo "Running Code Analysis"
+
     // requires SonarQube Scanner 2.8+
     def scannerHome = tool 'Jobtech_Sokapi_SonarScanner';
     echo "Scanner Home: ${scannerHome}"
@@ -34,26 +35,23 @@ node('jobtech-appdev'){
     //}
   }
 
-  // Publish the built code file to Nexus
-  stage('Publish to Nexus') {
-    echo "Publish to Nexus"
-
-    // Replace xyz-nexus with the name of your Nexus project
-    //sh "${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3.xyz-nexus.svc.cluster.local:8081/repository/releases"
-  }
-
-  // Build the OpenShift Image in OpenShift and tag it.
+  // Build the OpenShift Image in OpenShift, tag and pus to nexus.
   stage('Build and Tag OpenShift Image') {
     echo "Building OpenShift container image sokapi:${devTag}"
 
     // Start Binary Build in OpenShift using the file we just published
-    sh "oc delete dc sokapi -n jt-dev"
-    sh "oc delete svc sokapi -n jt-dev"
+    sh "set +e"
+    //sh "oc delete dc sokapi -n jt-dev"
+    //sh "oc delete svc sokapi -n jt-dev"
     sh "oc new-app jt-dev/sokapi:${devTag} --name=sokapi --allow-missing-imagestream-tags=true -n jt-dev"
+    sh "set -e"
     sh "oc set triggers dc/sokapi --remove-all -n jt-dev"
 
     // Tag the image using the devTag
     openshiftTag alias: 'false', destStream: 'sokapi', destTag: devTag, destinationNamespace: 'jt-dev', namespace: 'jt-dev', srcStream: 'sokapi', srcTag: 'latest', verbose: 'false'
+
+    echo "Publish to Nexus sokapi_releases repository"
+    //sh "${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3-jt-nexus.dev.services.jtech.se/repository/sokapi_releases/"
   }
 
   // Deploy the built image to the Development Environment.
