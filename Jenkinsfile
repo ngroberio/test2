@@ -43,7 +43,6 @@ node('jobtech-appdev'){
 
     // Start Binary Build in OpenShift using the file we just published
     sh "oc delete dc sokapi -n jt-dev"
-    sh "oc delete svc sokapi -n jt-dev"
     sh "oc new-app jt-dev/sokapi:${devTag} --name=sokapi --allow-missing-imagestream-tags=true -n jt-dev"
     sh "oc set triggers dc/sokapi --remove-all -n jt-dev"
 
