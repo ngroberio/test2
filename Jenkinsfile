@@ -27,9 +27,11 @@ node('jobtech-appdev'){
     // requires SonarQube Scanner 2.8+
     def scannerHome = tool 'Jobtech_Sokapi_SonarScanner';
     echo "Scanner Home: ${scannerHome}"
-    withSonarQubeEnv('Jobtech_SonarQube_Server') {
-      sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=."
-    }
+    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=. -Dsonar.host.url=http://sonarqube-jt-sonarqube.dev.services.jtech.se -Dsonar.login=bf3aa9032fea226a8174aed51e4b6df8f318e80d"
+
+    #withSonarQubeEnv('Jobtech_SonarQube_Server') {
+    #  sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=."
+    #}
   }
 
   // Publish the built code file to Nexus
