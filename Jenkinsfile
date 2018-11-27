@@ -28,7 +28,7 @@ node('jobtech-appdev'){
     def scannerHome = tool 'Jobtech_Sokapi_SonarScanner';
     echo "Scanner Home: ${scannerHome}"
     withSonarQubeEnv('Jobtech_SonarQube_Server') {
-      sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=.
+      sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=."
     }
   }
 
