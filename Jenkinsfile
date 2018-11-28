@@ -5,9 +5,7 @@
 // 'jobtech-appdev' has skopeo installed as well.
 node('jobtech-appdev'){
 
-  // The following variables need to be defined at the top level
-  // and not inside the scope of a stage - otherwise they would not
-  // be accessible from other stages.
+  // The following variables need to be defined at the top level and not inside the scope of a stage - otherwise they would not be accessible from other stages.
   def version    = "1"
   //def chechoutDir = "/tmp/workspace/sokapi-pipeline"
 
@@ -29,11 +27,11 @@ node('jobtech-appdev'){
     // requires SonarQube Scanner 2.8+
     def scannerHome = tool 'Jobtech_Sokapi_SonarScanner';
     echo "Scanner Home: ${scannerHome}"
-    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=. -Dsonar.host.url=http://sonarqube-jt-sonarqube.dev.services.jtech.se -Dsonar.login=bf3aa9032fea226a8174aed51e4b6df8f318e80d"
+    //sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=. -Dsonar.host.url=http://sonarqube-jt-sonarqube.dev.services.jtech.se -Dsonar.login=bf3aa9032fea226a8174aed51e4b6df8f318e80d"
 
-    //withSonarQubeEnv('Jobtech_SonarQube_Server') {
-    //  sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=."
-    //}
+    withSonarQubeEnv('Jobtech_SonarQube_Server') {
+      sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=."
+    }
   }
 
   // Build the OpenShift Image in OpenShift, tag and pus to nexus.
