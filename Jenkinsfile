@@ -19,6 +19,7 @@ node('jobtech-appdev'){
   // Checkout Source Code
   stage('Checkout Source') {
     checkout scm
+    sh "ls test2"
   }
 
   // Call SonarQube for Code Analysis
@@ -41,6 +42,7 @@ node('jobtech-appdev'){
 
     // Start Binary Build in OpenShift using the file we just published
     sh "set +e"
+    sh "oc start-build sokapix --from-dir='.' --follow"
     //sh "oc delete dc sokapi -n jt-dev"
     //sh "oc delete svc sokapi -n jt-dev"
     sh "oc new-app jt-dev/sokapi:${devTag} --name=sokapi --allow-missing-imagestream-tags=true -n jt-dev"
