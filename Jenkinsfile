@@ -21,6 +21,7 @@ node('jobtech-appdev'){
   stage('Checkout Source') {
     checkout scm
     sh "ls ${chechoutDir}"
+    sh "sudo docker build -t sokannonser:latest ${chechoutDir}"
   }
 
   // Call SonarQube for Code Analysis
@@ -40,8 +41,7 @@ node('jobtech-appdev'){
   // Build the OpenShift Image in OpenShift, tag and pus to nexus.
   stage('Build and Tag OpenShift Image') {
     echo "Building OpenShift container image sokapi:${devTag}"
-    sh "sudo docker build -t sokannonser:latest ${chechoutDir}"
-    
+
     // Start Binary Build in OpenShift using the file we just published
     sh "set +e"
     sh "oc start-build sokapix --from-dir='.' --follow"
