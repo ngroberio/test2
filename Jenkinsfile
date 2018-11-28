@@ -21,7 +21,6 @@ node('jobtech-appdev'){
   stage('Checkout Source') {
     checkout scm
     sh "ls ${chechoutDir}"
-    sh "docker build -t sokannonser:latest ${chechoutDir}"
   }
 
   // Call SonarQube for Code Analysis
