@@ -23,7 +23,7 @@ node('jobtech-appdev'){
   // Call SonarQube for Code Analysis
   stage('Code Analysis') {
     echo "Running Code Analysis"
-
+    sh "set +e"
     // requires SonarQube Scanner 2.8+
     def scannerHome = tool 'Jobtech_Sokapi_SonarScanner';
     echo "Scanner Home: ${scannerHome}"
@@ -32,6 +32,7 @@ node('jobtech-appdev'){
     withSonarQubeEnv('Jobtech_SonarQube_Server') {
       sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=."
     }
+    sh "set -e"
   }
 
   // Build the OpenShift Image in OpenShift, tag and pus to nexus.
