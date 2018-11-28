@@ -9,7 +9,7 @@ node('jobtech-appdev'){
   // and not inside the scope of a stage - otherwise they would not
   // be accessible from other stages.
   def version    = "1"
-  def chechoutDir = "/tmp/workspace/jt-jenkins/jt-jenkins-sokapi-pipeline"
+  //def chechoutDir = "/tmp/workspace/sokapi-pipeline"
 
   // Set the tag for the development image: version + build number
   def devTag  = "${version}-${BUILD_NUMBER}"
@@ -20,7 +20,6 @@ node('jobtech-appdev'){
   // Checkout Source Code
   stage('Checkout Source') {
     checkout scm
-    sh "ls ${chechoutDir}"
   }
 
   // Call SonarQube for Code Analysis
