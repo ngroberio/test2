@@ -28,7 +28,7 @@ node('jobtech-appdev'){
     echo "Scanner Home: ${scannerHome}"
     //sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=. -Dsonar.host.url=http://sonarqube-jt-sonarqube.dev.services.jtech.se -Dsonar.login=${sonarqube_token}"
     withSonarQubeEnv('Jobtech_SonarQube_Server') {
-    //  sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=."
+      sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=."
     }
   }
 
@@ -68,8 +68,6 @@ node('jobtech-appdev'){
       openshiftDeploy depCfg: 'sokapi', namespace: 'jt-dev', verbose: 'false', waitTime: '', waitUnit: 'sec'
       echo "[openshiftVerifyDeployment]"
       openshiftVerifyDeployment depCfg: 'sokapi', namespace: 'jt-dev', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '15', waitUnit: 'sec'
-      //echo "[openshiftVerifyDeployment]"
-      //openshiftVerifyService namespace: 'jt-dev', svcName: 'sokapi', verbose: 'false', waitTime: '15', waitUnit: 'sec'
   }
 
   // Run Unit Tests on Development Environment.
@@ -94,7 +92,6 @@ node('jobtech-appdev'){
       // Deploy the test application.
       openshiftDeploy depCfg: 'sokapi', namespace: 'jt-test', verbose: 'false', waitTime: '', waitUnit: 'sec'
       openshiftVerifyDeployment depCfg: 'sokapi', namespace: 'jt-test', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '', waitUnit: 'sec'
-      //openshiftVerifyService namespace: 'jt-test', svcName: 'sokapi', verbose: 'false'
   }
 
  // Run Unit Tests on Test Environment.
@@ -140,7 +137,6 @@ node('jobtech-appdev'){
       // Deploy the inactive application.
       openshiftDeploy depCfg: destApp, namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
       openshiftVerifyDeployment depCfg: destApp, namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
-      //openshiftVerifyService namespace: 'jt-prod', svcName: destApp, verbose: 'false'
   }
 
   stage('Switch over to new Version') {
