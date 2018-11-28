@@ -37,11 +37,10 @@ node('jobtech-appdev'){
     echo "Building OpenShift container image sokapi:${devTag}"
 
     // Start Binary Build in OpenShift using the file we just published
-    sh "set +e"
     sh "oc start-build sokapi-d-bc -n jt-dev --follow"
-    sh "oc new-app jt-dev/sokapi:${devTag} --name=sokapi --allow-missing-imagestream-tags=true -n jt-dev"
-    sh "set -e"
-    sh "oc set triggers dc/sokapi --remove-all -n jt-dev"
+
+    //sh "oc new-app jt-dev/sokapi:${devTag} --name=sokapi --allow-missing-imagestream-tags=true -n jt-dev"
+    //sh "oc set triggers dc/sokapi --remove-all -n jt-dev"
 
     // Tag the image using the devTag
     openshiftTag alias: 'false', destStream: 'sokapi', destTag: devTag, destinationNamespace: 'jt-dev', namespace: 'jt-dev', srcStream: 'sokapi', srcTag: 'latest', verbose: 'false'
@@ -54,8 +53,11 @@ node('jobtech-appdev'){
   stage('Deploy to Dev Env') {
     echo "Deploying container image to Development Env Project"
 
+    echo "DEV TAGGING"
+    sh "oc tag jt-dev/sokapi:latest jt-dev/sokapi:${devTag} -n jt-dev"
+
     // Update the Image on the Development Deployment Config
-    sh "oc set image dc/sokapi sokapi=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-dev"
+    sh "oc set image dc/sokapi sokapi=sokapi:${devTag} -n jt-dev"
 
       // Update the Config Map which contains the users for the Tasks application
       //sh "oc delete configmap tasks-config -n jt-dev --ignore-not-found=true"
@@ -67,7 +69,7 @@ node('jobtech-appdev'){
       echo "[openshiftVerifyDeployment]"
       openshiftVerifyDeployment depCfg: 'sokapi', namespace: 'jt-dev', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '15', waitUnit: 'sec'
       //echo "[openshiftVerifyDeployment]"
-      //openshiftVerifyService namespace: 'jt-dev', svcName: 'sokapi', verbose: 'false', waitTime: '15', waitUnit: 'sec'
+      openshiftVerifyService namespace: 'jt-dev', svcName: 'sokapi', verbose: 'false', waitTime: '15', waitUnit: 'sec'
   }
 
   // Run Unit Tests on Development Environment.
