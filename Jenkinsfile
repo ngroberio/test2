@@ -142,7 +142,7 @@ node('jobtech-appdev'){
   stage('Switch over to new Version') {
     input "Switch Production?"
 
-    echo "Switching Production application to ${destApp}."
+    echo "Switching Production application to ${destApp}"
     sh 'oc patch route sokapi -n jt-prod -p \'{"spec":{"to":{"name":"' + destApp + '"}}}\''
   }
 
