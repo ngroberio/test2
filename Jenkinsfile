@@ -43,7 +43,7 @@ node('jobtech-appdev'){
     //sh "oc set triggers dc/sokapi --remove-all -n jt-dev"
 
     // Tag the image using the devTag
-    oc set image dc/sokapi sokapi=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-dev
+    sh "oc tag jt-dev/sokapi:latest jt-dev/sokapi:${devTag} -n jt-dev"
 
     echo "Publish to Nexus sokapi_releases repository"
     //sh "${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3-jt-nexus.dev.services.jtech.se/repository/sokapi_releases/"
