@@ -43,7 +43,7 @@ node('jobtech-appdev'){
     //sh "oc set triggers dc/sokapi --remove-all -n jt-dev"
 
     // Tag the image using the devTag
-    openshiftTag alias: 'false', destStream: 'sokapi', destTag: devTag, destinationNamespace: 'jt-dev', namespace: 'jt-dev', srcStream: 'sokapi', srcTag: 'latest', verbose: 'false'
+    oc set image dc/sokapi sokapi=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-dev
 
     echo "Publish to Nexus sokapi_releases repository"
     //sh "${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3-jt-nexus.dev.services.jtech.se/repository/sokapi_releases/"
@@ -57,7 +57,7 @@ node('jobtech-appdev'){
     sh "oc tag jt-dev/sokapi:latest jt-dev/sokapi:${devTag} -n jt-dev"
 
     // Update the Image on the Development Deployment Config
-    sh "oc set image dc/sokapi sokapi=sokapi:${devTag} -n jt-dev"
+    sh "oc set image dc/sokapi sokapi=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-dev"
 
       // Update the Config Map which contains the users for the Tasks application
       //sh "oc delete configmap tasks-config -n jt-dev --ignore-not-found=true"
