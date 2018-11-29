@@ -15,9 +15,12 @@ node('jobtech-appdev'){
   // Set the tag for the production image: version
   def prodTag = "p-${devTag}"
 
+  def branchName = "";
+
   // Checkout Source Code
   stage('Checkout Source') {
-    checkout scm
+    branchName = scm.branches.first().getExpandedName(env.getEnvironment());
+    checkout scm;
   }
 
   // Call SonarQube for Code Analysis
@@ -120,8 +123,9 @@ node('jobtech-appdev'){
   // Do not activate the new version yet.
   def destApp   = "sokapi-a"
   def activeApp = ""
-
+  def prodBranchSuffix = "PROD"
   stage('A/B Production Deployment') {
+    if(branchName.contains(prodBranchSufix)){
       input "Deploy to Production?"
 
       activeApp = sh(returnStdout: true, script: "oc get route sokapi -n jt-prod -o jsonpath='{ .spec.to.name }'").trim()
@@ -137,6 +141,7 @@ node('jobtech-appdev'){
       // Deploy the inactive application.
       openshiftDeploy depCfg: destApp, namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
       openshiftVerifyDeployment depCfg: destApp, namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
+    }
   }
 
   stage('Switch over to new Version') {
@@ -144,6 +149,7 @@ node('jobtech-appdev'){
 
     echo "Switching Production application to ${destApp}"
     sh 'oc patch route sokapi -n jt-prod -p \'{"spec":{"to":{"name":"' + destApp + '"}}}\''
+    sh "oc set route-backends web ${destApp}=100 ${activeApp}=0"
   }
 
 }
