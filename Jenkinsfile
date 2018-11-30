@@ -17,6 +17,7 @@ node('jobtech-appdev'){
 
   def branchName = env.BRANCH_NAME;
   def gitBranchName = env.GIT_BRANCH;
+  $GIT_BRANCH
   def gitLocalbranchName = env.GIT_LOCAL_BRANCH;
 
 
@@ -27,6 +28,7 @@ node('jobtech-appdev'){
     echo "Branch Name: ${branchName}"
     echo "GIT Branch Name: ${gitBranchName}"
     echo "Local GIT Branch Name: ${gitLocalbranchName}"
+    echo $GIT_BRANCH
 
   }
 
