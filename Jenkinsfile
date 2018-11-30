@@ -18,6 +18,7 @@ node('jobtech-appdev'){
   def branchName = env.BRANCH_NAME;
   def gitBranchName = env.GIT_BRANCH;
   def gitLocalbranchName = env.GIT_LOCAL_BRANCH;
+  def scmBranchName = scm.branch;
 
   // Checkout Source Code
   stage('Checkout Source') {
@@ -26,6 +27,7 @@ node('jobtech-appdev'){
     echo "Branch Name: ${branchName}"
     echo "GIT Branch Name: ${gitBranchName}"
     echo "Local GIT Branch Name: ${gitLocalbranchName}"
+    echo "SCM GIT Branch Name: ${scmBranchName}"
   }
 
   // Call SonarQube for Code Analysis
