@@ -27,7 +27,7 @@ node('jobtech-appdev'){
     echo "Branch Name: ${branchName}"
     echo "GIT Branch Name: ${gitBranchName}"
     echo "Local GIT Branch Name: ${gitLocalbranchName}"
-    echo scm.branches[0].name
+    echo sh "git rev-parse --abbrev-ref HEAD"
 
   }
 
