@@ -17,7 +17,6 @@ node('jobtech-appdev'){
 
   def branchName = env.BRANCH_NAME;
   def gitBranchName = env.GIT_BRANCH;
-  $GIT_BRANCH
   def gitLocalbranchName = env.GIT_LOCAL_BRANCH;
 
 
