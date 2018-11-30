@@ -123,33 +123,33 @@ node('jobtech-appdev'){
   // Do not activate the new version yet.
   def destApp   = "sokapi-a"
   def activeApp = ""
-  def prodBranchSuffix = "PROD"
-  stage('A/B Production Deployment') {
-    if(branchName.contains(prodBranchSufix)){
-      input "Deploy to Production?"
+  def prodBranchSuffix = "prod"
+  if(branchName.contains(prodBranchSufix)){
+    stage('A/B Production Deployment') {
 
-      activeApp = sh(returnStdout: true, script: "oc get route sokapi -n jt-prod -o jsonpath='{ .spec.to.name }'").trim()
-      if (activeApp == "sokapi-a") {
-        destApp = "sokapi-b"
-      }
-      echo "Active Application:      " + activeApp
-      echo "Destination Application: " + destApp
+        input "Deploy to Production?"
 
-      // Update the Image on the Production Deployment Config
-      sh "oc set image dc/${destApp} ${destApp}=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-prod"
+        activeApp = sh(returnStdout: true, script: "oc get route sokapi -n jt-prod -o jsonpath='{ .spec.to.name }'").trim()
+        if (activeApp == "sokapi-a") {
+          destApp = "sokapi-b"
+        }
+        echo "Active Application:      " + activeApp
+        echo "Destination Application: " + destApp
 
-      // Deploy the inactive application.
-      openshiftDeploy depCfg: destApp, namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
-      openshiftVerifyDeployment depCfg: destApp, namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
+        // Update the Image on the Production Deployment Config
+        sh "oc set image dc/${destApp} ${destApp}=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-prod"
+
+        // Deploy the inactive application.
+        openshiftDeploy depCfg: destApp, namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
+        openshiftVerifyDeployment depCfg: destApp, namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
+    }
+
+    stage('Switch over to new Version') {
+      input "Switch Production?"
+
+      echo "Switching Production application to ${destApp}"
+      sh 'oc patch route sokapi -n jt-prod -p \'{"spec":{"to":{"name":"' + destApp + '"}}}\''
+      sh "oc set route-backends web ${destApp}=100 ${activeApp}=0"
     }
   }
-
-  stage('Switch over to new Version') {
-    input "Switch Production?"
-
-    echo "Switching Production application to ${destApp}"
-    sh 'oc patch route sokapi -n jt-prod -p \'{"spec":{"to":{"name":"' + destApp + '"}}}\''
-    sh "oc set route-backends web ${destApp}=100 ${activeApp}=0"
-  }
-
 }
