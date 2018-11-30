@@ -16,11 +16,16 @@ node('jobtech-appdev'){
   def prodTag = "p-${devTag}"
 
   def branchName = env.BRANCH_NAME;
+  def gitBranchName = env.GIT_BRANCH;
+  def gitLocalbranchName = env.GIT_LOCAL_BRANCH;
 
   // Checkout Source Code
   stage('Checkout Source') {
   echo "Branch is: ${env.BRANCH_NAME}"
     checkout scm;
+    echo "Branch Name: ${branchName}"
+    echo "GIT Branch Name: ${gitBranchName}"
+    echo "Local GIT Branch Name: ${gitLocalbranchName}"
   }
 
   // Call SonarQube for Code Analysis
@@ -115,7 +120,7 @@ node('jobtech-appdev'){
   def destApp   = "sokapi-a"
   def activeApp = ""
   stage('A/B Production Deployment') {
-    if ( branchName.contains("prod") ){
+    if ( branchName != null && branchName.contains("prod") ){
         input "Deploy to Production?"
         activeApp = sh(returnStdout: true, script: "oc get route sokapi -n jt-prod -o jsonpath='{ .spec.to.name }'").trim()
         if (activeApp == "sokapi-a") {
