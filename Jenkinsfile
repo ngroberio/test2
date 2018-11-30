@@ -23,12 +23,10 @@ node('jobtech-appdev'){
   // Checkout Source Code
   stage('Checkout Source') {
   echo "Branch is: ${env.BRANCH_NAME}"
-    checkout scm;
+    checkout scm
     echo "Branch Name: ${branchName}"
     echo "GIT Branch Name: ${gitBranchName}"
     echo "Local GIT Branch Name: ${gitLocalbranchName}"
-    echo sh "git rev-parse --abbrev-ref HEAD"
-
   }
 
   // Call SonarQube for Code Analysis
@@ -41,6 +39,8 @@ node('jobtech-appdev'){
     withSonarQubeEnv('Jobtech_SonarQube_Server') {
       sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=."
     }
+
+    sh "git rev-parse --abbrev-ref HEAD"
   }
 
   // Build the OpenShift Image in OpenShift, tag and pus to nexus.
