@@ -40,7 +40,9 @@ node('jobtech-appdev'){
       sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=."
     }
 
-    sh "git rev-parse --abbrev-ref HEAD"
+    branchName = sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD')
+    echo "Branch Name: ${branchName}"
+
   }
 
   // Build the OpenShift Image in OpenShift, tag and pus to nexus.
