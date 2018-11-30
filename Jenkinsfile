@@ -15,7 +15,7 @@ node('jobtech-appdev'){
   // Set the tag for the production image: version
   def prodTag = "p-${devTag}"
 
-  def branchName = ${env.BRANCH_NAME};
+  def branchName = env.BRANCH_NAME;
 
   // Checkout Source Code
   stage('Checkout Source') {
