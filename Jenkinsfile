@@ -109,15 +109,6 @@ node('jobtech-appdev'){
     // TBD
   }
 
-  // Copy Image to Nexus Docker Registry
-  stage('Copy Image to Nexus Docker Registry') {
-    echo "Copy image to Nexus Docker Registry"
-    //sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds openshift:\$(oc whoami -t) --dest-creds admin:admin123 docker://docker-registry.default.svc.cluster.local:5000/jt-dev/sokapi:${devTag} docker://nexus-registry.nexus.svc.cluster.local:5000/sokapi:${devTag}"
-
-    // Tag the built image with the production tag.
-    //openshiftTag alias: 'false', destStream: 'sokapi', destTag: prodTag, destinationNamespace: 'jt-prod', namespace: 'jt-test', srcStream: 'sokapi', srcTag: devTag, verbose: 'false'
-  }
-
   // A/B Deployment into Production
   // -------------------------------------
   // Do not activate the new version yet.
