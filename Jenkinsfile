@@ -122,7 +122,7 @@ node('jobtech-appdev'){
   def destApp   = "sokapi-a"
   def activeApp = ""
   stage('A/B Production Deployment') {
-    if ( branchName != null && branchName.contains("prod") ){
+    //if ( branchName != null && branchName.contains("prod") ){
         input "Deploy to Production?"
         activeApp = sh(returnStdout: true, script: "oc get route sokapi -n jt-prod -o jsonpath='{ .spec.to.name }'").trim()
         if (activeApp == "sokapi-a") {
@@ -142,6 +142,6 @@ node('jobtech-appdev'){
         sh 'oc patch route sokapi -n jt-prod -p \'{"spec":{"to":{"name":"' + destApp + '"}}}\''
         sh "oc set route-backends web ${destApp}=100 ${activeApp}=0"
 
-      }
+      //}
     }
 }
