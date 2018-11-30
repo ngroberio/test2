@@ -28,7 +28,7 @@ node('jobtech-appdev'){
     echo "Branch Name: ${branchName}"
     echo "GIT Branch Name: ${gitBranchName}"
     echo "Local GIT Branch Name: ${gitLocalbranchName}"
-    echo $GIT_BRANCH
+    echo scm.branches[0].name
 
   }
 
