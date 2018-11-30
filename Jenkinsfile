@@ -122,9 +122,7 @@ node('jobtech-appdev'){
   // Do not activate the new version yet.
   def destApp   = "sokapi-a"
   def activeApp = ""
-  def prodBranchSuffix = "prod"
-  if(branchName.contains(prodBranchSufix)){
-    stage('A/B Production Deployment') {
+  stage('A/B Production Deployment') {
     when { branch "prod/*" }
       steps {
         input "Deploy to Production?"
@@ -148,5 +146,4 @@ node('jobtech-appdev'){
 
       }
     }
-  }
 }
