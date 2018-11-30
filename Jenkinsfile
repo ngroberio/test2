@@ -40,7 +40,7 @@ node('jobtech-appdev'){
       sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=."
     }
 
-    branchName = sh(returnStdout: true, script: 'git branch | grep \* | cut -d ' ' -f2')
+    branchName = sh(returnStdout: true, script: "git branch | grep \* | cut -d ' ' -f2")
     echo "Branch Name: ${branchName}"
 
   }
