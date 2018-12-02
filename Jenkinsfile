@@ -144,7 +144,7 @@ node('jobtech-appdev'){
         input "Switch Production?"
         echo "Switching Production application to ${destApp}"
         sh 'oc patch route sokapi -n jt-prod -p \'{"spec":{"to":{"name":"' + destApp + '"}}}\''
-        //sh "oc set route-backends web ${destApp}=100 ${activeApp}=0"
+        ////sh "oc set route-backends web ${destApp}=100 ${activeApp}=0"
 
       //}
     }
