@@ -27,7 +27,6 @@ node('jobtech-appdev'){
     echo "Branch Name: ${branchName}"
     echo "GIT Branch Name: ${gitBranchName}"
     echo "Local GIT Branch Name: ${gitLocalbranchName}"
-    sh "docker"
   }
 
   // Call SonarQube for Code Analysis
@@ -60,6 +59,8 @@ node('jobtech-appdev'){
     sh "oc tag jt-dev/sokapi:latest jt-dev/sokapi:${devTag} -n jt-dev"
 
     echo "Publish to Nexus sokapi_releases repository"
+    sh "docker tag jt-dev/sokapi:${devTag} http://nexus3-jt-nexus.dev.services.jtech.se/repository/sokapi_releases/jt-dev/sokapi:${devTag}"
+    sh "docker push http://nexus3-jt-nexus.dev.services.jtech.se/repository/sokapi_releases/jt-dev/sokapi:${devTag}"
     //sh "${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3-jt-nexus.dev.services.jtech.se/repository/sokapi_releases/"
   }
 
@@ -86,6 +87,7 @@ node('jobtech-appdev'){
 
   // Run Unit Tests on Development Environment.
   stage('Dev Env Unit Tests') {
+
     echo "Running Dev Unit Tests"
     // TBD
   }
