@@ -27,6 +27,7 @@ node('jobtech-appdev'){
     echo "Branch Name: ${branchName}"
     echo "GIT Branch Name: ${gitBranchName}"
     echo "Local GIT Branch Name: ${gitLocalbranchName}"
+    sh "docker"
   }
 
   // Call SonarQube for Code Analysis
