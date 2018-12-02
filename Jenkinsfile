@@ -42,7 +42,7 @@ node('jobtech-appdev'){
     }
 
     branchName = sh(returnStdout: true, script: "git show-branch")
-    echo "Branch Name>>>>> ${branchName}"
+    echo "Branch Name>> ${branchName}"
 
   }
 
