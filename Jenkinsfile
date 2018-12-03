@@ -59,7 +59,7 @@ node('jobtech-appdev'){
     sh "oc tag jt-dev/sokapi:latest jt-dev/sokapi:${devTag} -n jt-dev"
 
     echo "Publish to Nexus sokapi_releases repository"
-    sh "oc tag jt-dev/sokapi:latest http://nexus3-jt-nexus.dev.services.jtech.se/repository/sokapi_releases/jt-dev/sokapi:${devTag} -n jt-dev"
+    //sh "oc tag jt-dev/sokapi:latest http://nexus3-jt-nexus.dev.services.jtech.se/repository/sokapi_releases/jt-dev/sokapi:${devTag} -n jt-dev"
   }
 
   // Deploy the built image to the Development Environment.
