@@ -3,7 +3,7 @@
 // Run this pipeline on the custom Jenkins Slave ('jobtech-appdev')
 // Jenkins Slaves have JDK and Maven already installed
 // 'jobtech-appdev' has skopeo installed as well.
-node('jobtech-appdev-py'){
+node('jobtech-appdev'){
 
   // The following variables need to be defined at the top level and not inside the scope of a stage - otherwise they would not be accessible from other stages.
   def version    = "1"
