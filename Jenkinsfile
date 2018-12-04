@@ -42,7 +42,6 @@ node('jobtech-appdev'){
 
     branchName = sh(returnStdout: true, script: "git show-branch")
     echo "Branch Name>> ${branchName}"
-
   }
 
   // Build the OpenShift Image in OpenShift, tag and pus to nexus.
@@ -134,7 +133,6 @@ node('jobtech-appdev'){
         sh "oc set image dc/sokapi-a sokapi-a=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-prod"
 
         // Deploy A the inactive application.
-        // Tag the image using the devTag
         sh "oc tag jt-dev/sokapi:${devTag} jt-prod/sokapi:${devTag} -n jt-prod"
         openshiftDeploy depCfg: sokapi-a, namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
         openshiftVerifyDeployment depCfg: sokapi-a, namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
