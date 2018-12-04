@@ -16,12 +16,15 @@ node('jobtech-appdev'){
   def prodTag = "p-${devTag}"
 
   def branchName = env.BRANCH_NAME;
+  def tagName = env.TAG_NAME;
 
   // Checkout Source Code
   stage('Checkout Source') {
   echo "Branch is: ${env.BRANCH_NAME}"
     checkout scm
     echo "Branch Name: ${branchName}"
+    echo "BRANCH_NAME >> ${BRANCH_NAME}"
+    echo "TAG_NAME >> ${tagName}"
   }
 
   // Call SonarQube for Code Analysis
