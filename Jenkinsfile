@@ -79,7 +79,6 @@ node('jobtech-appdev'){
 
     echo "Running Dev Unit Tests"
     // TBD
-    sh "python -m pytest -svv -ra -m unit ./tests/"
   }
 
     // Run Unit Tests on Development Environment.
