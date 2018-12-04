@@ -16,17 +16,12 @@ node('jobtech-appdev'){
   def prodTag = "p-${devTag}"
 
   def branchName = env.BRANCH_NAME;
-  def gitBranchName = env.GIT_BRANCH;
-  def gitLocalbranchName = env.GIT_LOCAL_BRANCH;
-
 
   // Checkout Source Code
   stage('Checkout Source') {
   echo "Branch is: ${env.BRANCH_NAME}"
     checkout scm
     echo "Branch Name: ${branchName}"
-    echo "GIT Branch Name: ${gitBranchName}"
-    echo "Local GIT Branch Name: ${gitLocalbranchName}"
   }
 
   // Call SonarQube for Code Analysis
@@ -35,14 +30,10 @@ node('jobtech-appdev'){
     // requires SonarQube Scanner 2.8+
     def scannerHome = tool 'Jobtech_Sokapi_SonarScanner';
     echo "Scanner Home: ${scannerHome}"
-    //sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=. -Dsonar.host.url=http://sonarqube-jt-sonarqube.dev.services.jtech.se -Dsonar.login=${sonarqube_token}"
+    ////sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=. -Dsonar.host.url=http://sonarqube-jt-sonarqube.dev.services.jtech.se -Dsonar.login=${sonarqube_token}"
     withSonarQubeEnv('Jobtech_SonarQube_Server') {
       sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=."
     }
-
-    branchName = sh(returnStdout: true, script: "git show-branch")
-    echo "Branch Name>>>>> ${branchName}"
-
   }
 
   // Build the OpenShift Image in OpenShift, tag and pus to nexus.
@@ -59,7 +50,7 @@ node('jobtech-appdev'){
     sh "oc tag jt-dev/sokapi:latest jt-dev/sokapi:${devTag} -n jt-dev"
 
     echo "Publish to Nexus sokapi_releases repository"
-    //sh "${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3-jt-nexus.dev.services.jtech.se/repository/sokapi_releases/"
+    //sh "oc tag jt-dev/sokapi:latest http://nexus3-jt-nexus.dev.services.jtech.se/repository/sokapi_releases/jt-dev/sokapi:${devTag} -n jt-dev"
   }
 
   // Deploy the built image to the Development Environment.
@@ -86,7 +77,7 @@ node('jobtech-appdev'){
   // Run Unit Tests on Development Environment.
   stage('Dev Env Unit Tests') {
     echo "Running Dev Unit Tests"
-    // TBD
+    //// TBD
   }
 
     // Run Unit Tests on Development Environment.
@@ -107,11 +98,6 @@ node('jobtech-appdev'){
       openshiftVerifyDeployment depCfg: 'sokapi', namespace: 'jt-test', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '', waitUnit: 'sec'
   }
 
- // Run Unit Tests on Test Environment.
-  stage('Test Env Unit Tests') {
-    echo "Running Test Env Unit Tests"
-    // TBD
-  }
 
   // Run Integration Tests on Test Environment.
   stage('Test Env Integration Tests') {
@@ -122,29 +108,28 @@ node('jobtech-appdev'){
   // A/B Deployment into Production
   // -------------------------------------
   // Do not activate the new version yet.
-  def destApp   = "sokapi-a"
-  def activeApp = ""
   stage('A/B Production Deployment') {
-    //if ( branchName != null && branchName.contains("prod") ){
+    if ( branchName != null && branchName.contains("prod") ){
         input "Deploy to Production?"
-        activeApp = sh(returnStdout: true, script: "oc get route sokapi -n jt-prod -o jsonpath='{ .spec.to.name }'").trim()
-        if (activeApp == "sokapi-a") {
-          destApp = "sokapi-b"
-        }
-        echo "Active Application:      " + activeApp
-        echo "Destination Application: " + destApp
-        // Update the Image on the Production Deployment Config
-        sh "oc set image dc/${destApp} ${destApp}=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-prod"
+        // Update the Image on the Production Deployment Config B
+        sh "oc set image dc/sokapi-b sokapi-b=docker-registry.default.svc:5000/jt-dev/sokapi:${prodTag} -n jt-prod"
 
-        // Deploy the inactive application.
-        openshiftDeploy depCfg: destApp, namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
-        openshiftVerifyDeployment depCfg: destApp, namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
+        // Deploy B the inactive application.
+        openshiftDeploy depCfg: 'sokapi-b', namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
+        openshiftVerifyDeployment depCfg: 'sokapi-b', namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
 
-        input "Switch Production?"
-        echo "Switching Production application to ${destApp}"
-        sh 'oc patch route sokapi -n jt-prod -p \'{"spec":{"to":{"name":"' + destApp + '"}}}\''
-        //sh "oc set route-backends web ${destApp}=100 ${activeApp}=0"
+        input "Deploy to SOKAPI-A Production?"
+        echo "Dploying to SOKAPI-A"
+        // Update the Image on the Production Deployment Config A
+        sh "oc set image dc/sokapi-a sokapi-a=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-prod"
 
-      //}
+        // Deploy A the inactive application.
+        sh "oc tag jt-dev/sokapi:${devTag} jt-prod/sokapi:${prodTag} -n jt-prod"
+        openshiftDeploy depCfg: 'sokapi-a', namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
+        openshiftVerifyDeployment depCfg: 'sokapi-a', namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
+
+      }else{
+        echo "[ NOT PROD BUILD ]"
+      }
     }
 }
