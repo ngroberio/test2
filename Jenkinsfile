@@ -40,8 +40,6 @@ node('jobtech-appdev'){
   stage('Build and Tag OpenShift Image') {
     echo "Building OpenShift container image sokapi:${devTag}"
 
-    sh "/usr/bin/python3"
-    
     // Start Binary Build in OpenShift using the file we just published
     sh "oc start-build sokapi -n jt-dev --follow"
 
@@ -79,6 +77,9 @@ node('jobtech-appdev'){
   // Run Unit Tests on Development Environment.
   stage('Dev Env Unit Tests') {
     echo "Running Dev Unit Tests"
+    withPythonEnv('python3') {
+      pysh 'python --version'
+    }
     //// TBD
   }
 
