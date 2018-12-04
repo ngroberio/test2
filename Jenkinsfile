@@ -23,7 +23,6 @@ node('jobtech-appdev'){
   echo "Branch is: ${env.BRANCH_NAME}"
     checkout scm
     echo "Branch Name: ${branchName}"
-    echo "BRANCH_NAME >> ${BRANCH_NAME}"
     echo "TAG_NAME >> ${tagName}"
   }
 
