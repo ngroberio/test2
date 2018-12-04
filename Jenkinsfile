@@ -40,6 +40,8 @@ node('jobtech-appdev'){
   stage('Build and Tag OpenShift Image') {
     echo "Building OpenShift container image sokapi:${devTag}"
 
+    sh "/usr/bin/python3"
+    
     // Start Binary Build in OpenShift using the file we just published
     sh "oc start-build sokapi -n jt-dev --follow"
 
@@ -129,7 +131,7 @@ node('jobtech-appdev'){
         openshiftVerifyDeployment depCfg: 'sokapi-a', namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
 
       }else{
-        echo "[ NOT PROD BUILD ]"
+        echo "[< NOT PROD BUILD >]"
       }
     }
 }
