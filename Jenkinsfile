@@ -129,7 +129,7 @@ node('jobtech-appdev'){
         openshiftVerifyDeployment depCfg: 'sokapi-a', namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
 
       }else{
-        echo "[[ NOT PROD BUILD ]]"
+        echo "[ NOT PROD BUILD ]"
       }
     }
 }
