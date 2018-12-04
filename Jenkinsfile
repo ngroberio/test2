@@ -16,17 +16,12 @@ node('jobtech-appdev'){
   def prodTag = "p-${devTag}"
 
   def branchName = env.BRANCH_NAME;
-  def gitBranchName = env.GIT_BRANCH;
-  def gitLocalbranchName = env.GIT_LOCAL_BRANCH;
-
 
   // Checkout Source Code
   stage('Checkout Source') {
   echo "Branch is: ${env.BRANCH_NAME}"
     checkout scm
     echo "Branch Name: ${branchName}"
-    echo "GIT Branch Name: ${gitBranchName}"
-    echo "Local GIT Branch Name: ${gitLocalbranchName}"
   }
 
   // Call SonarQube for Code Analysis
@@ -39,9 +34,6 @@ node('jobtech-appdev'){
     withSonarQubeEnv('Jobtech_SonarQube_Server') {
       sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=."
     }
-
-    branchName = sh(returnStdout: true, script: "git show-branch")
-    echo "Branch Name>> ${branchName}"
   }
 
   // Build the OpenShift Image in OpenShift, tag and pus to nexus.
@@ -87,6 +79,7 @@ node('jobtech-appdev'){
 
     echo "Running Dev Unit Tests"
     // TBD
+    sh "python -m pytest -svv -ra -m unit ./tests/"
   }
 
     // Run Unit Tests on Development Environment.
@@ -118,7 +111,7 @@ node('jobtech-appdev'){
   // -------------------------------------
   // Do not activate the new version yet.
   stage('A/B Production Deployment') {
-    //if ( branchName != null && branchName.contains("prod") ){
+    if ( branchName != null && branchName.contains("prod") ){
         input "Deploy to Production?"
         // Update the Image on the Production Deployment Config B
         sh "oc set image dc/sokapi-b sokapi-b=docker-registry.default.svc:5000/jt-dev/sokapi:${prodTag} -n jt-prod"
@@ -137,6 +130,8 @@ node('jobtech-appdev'){
         openshiftDeploy depCfg: 'sokapi-a', namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
         openshiftVerifyDeployment depCfg: 'sokapi-a', namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
 
-      //}
+      }else{
+        echo "[ NOT PROD BUILD ]"
+      }
     }
 }
