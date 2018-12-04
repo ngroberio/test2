@@ -16,14 +16,12 @@ node('jobtech-appdev'){
   def prodTag = "p-${devTag}"
 
   def branchName = env.BRANCH_NAME;
-  def tagName = env.TAG_NAME;
 
   // Checkout Source Code
   stage('Checkout Source') {
   echo "Branch is: ${env.BRANCH_NAME}"
     checkout scm
     echo "Branch Name: ${branchName}"
-    echo "TAG_NAME >> ${tagName}"
   }
 
   // Call SonarQube for Code Analysis
@@ -131,7 +129,7 @@ node('jobtech-appdev'){
         openshiftVerifyDeployment depCfg: 'sokapi-a', namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
 
       }else{
-        echo "[ NOT PROD BUILD ]"
+        echo "[ NO PROD BUILD STEP]"
       }
     }
 }
