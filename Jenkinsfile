@@ -124,8 +124,8 @@ node('jobtech-appdev'){
         sh "oc set image dc/sokapi-b sokapi-b=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-prod"
 
         // Deploy B the inactive application.
-        openshiftDeploy depCfg: sokapi-b, namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
-        openshiftVerifyDeployment depCfg: sokapi-b, namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
+        openshiftDeploy depCfg: 'sokapi-b', namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
+        openshiftVerifyDeployment depCfg: 'sokapi-b', namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
 
         input "Deploy to SOKAPI-A Production?"
         echo "Dploying to SOKAPI-A"
@@ -134,8 +134,8 @@ node('jobtech-appdev'){
 
         // Deploy A the inactive application.
         sh "oc tag jt-dev/sokapi:${devTag} jt-prod/sokapi:${devTag} -n jt-prod"
-        openshiftDeploy depCfg: sokapi-a, namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
-        openshiftVerifyDeployment depCfg: sokapi-a, namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
+        openshiftDeploy depCfg: 'sokapi-a', namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
+        openshiftVerifyDeployment depCfg: 'sokapi-a', namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
 
       //}
     }
