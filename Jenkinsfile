@@ -114,7 +114,7 @@ node('jobtech-appdev'){
     //if ( branchName != null && branchName.contains("prod") ){
         input "Deploy to Production?"
         // Update the Image on the Production Deployment Config B
-        sh "oc set image dc/sokapi-b sokapi-b=docker-registry.default.svc:5000/jt-dev/sokapi:${prodTag} -n jt-prod"
+        sh "oc set image dc/sokapi-b sokapi-b=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-prod"
 
         // Deploy B the inactive application.
         openshiftDeploy depCfg: 'sokapi-b', namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
