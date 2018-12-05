@@ -80,13 +80,13 @@ node('jobtech-appdev'){
   // Run Unit Tests on Development Environment.
   stage('Dev Env Unit Tests') {
     echo "Running Dev Unit Tests"
-    //sh "python -m pytest -svv -ra -m unit tests/"
+    sh "python -m pytest -svv -ra -m unit tests/"
   }
 
   // Run Unit Tests on Development Environment.
   stage('Dev Env Integration Tests') {
     echo "Running Dev Integration Tests"
-    //sh "python3 -m pytest -svv -ra -m integration tests/"
+    sh "python -m pytest -svv -ra -m integration tests/"
   }
 
    // Deploy the built image to the Test Environment.
