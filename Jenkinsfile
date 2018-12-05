@@ -77,10 +77,7 @@ node('jobtech-appdev'){
   // Run Unit Tests on Development Environment.
   stage('Dev Env Unit Tests') {
     echo "Running Dev Unit Tests"
-    //withPythonEnv('python3') {
-      //pysh 'python --version'
-    //}
-    sh "python3 -m pytest -svv -ra -m unit tests/"
+    sh "python -m pytest -svv -ra -m unit tests/"
     // TBD
   }
 
