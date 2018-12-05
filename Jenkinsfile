@@ -32,7 +32,7 @@ node('jobtech-appdev'){
     echo "Scanner Home: ${scannerHome}"
     ////sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=. -Dsonar.host.url=http://sonarqube-jt-sonarqube.dev.services.jtech.se -Dsonar.login=${sonarqube_token}"
     withSonarQubeEnv('Jobtech_SonarQube_Server') {
-      sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jobtech_sokapi -Dsonar.sources=."
+      sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=sokapi_sonar -Dsonar.sources=."
     }
   }
 
@@ -60,6 +60,9 @@ node('jobtech-appdev'){
     echo "DEV TAGGING"
     sh "oc tag jt-dev/sokapi:latest jt-dev/sokapi:${devTag} -n jt-dev"
 
+    echo "DEV ANNOTATING"
+    sh "oc annotate is jt-dev/sokapi:${devTag} dokapi.image.identifier="`date`" --overwrite"
+
     // Update the Image on the Development Deployment Config
     sh "oc set image dc/sokapi sokapi=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-dev"
 
@@ -77,14 +80,13 @@ node('jobtech-appdev'){
   // Run Unit Tests on Development Environment.
   stage('Dev Env Unit Tests') {
     echo "Running Dev Unit Tests"
-    sh "python -m pytest -svv -ra -m unit tests/"
-    // TBD
+    //sh "python -m pytest -svv -ra -m unit tests/"
   }
 
-    // Run Unit Tests on Development Environment.
+  // Run Unit Tests on Development Environment.
   stage('Dev Env Integration Tests') {
     echo "Running Dev Integration Tests"
-    //// TBD
+    //sh "python3 -m pytest -svv -ra -m integration tests/"
   }
 
    // Deploy the built image to the Test Environment.
@@ -99,7 +101,6 @@ node('jobtech-appdev'){
       openshiftVerifyDeployment depCfg: 'sokapi', namespace: 'jt-test', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'false', waitTime: '', waitUnit: 'sec'
   }
 
-
   // Run Integration Tests on Test Environment.
   stage('Test Env Integration Tests') {
     echo "Running Test env Integration Tests"
@@ -110,7 +111,7 @@ node('jobtech-appdev'){
   // -------------------------------------
   // Do not activate the new version yet.
   stage('A/B Production Deployment') {
-    if ( branchName != null && branchName.contains("prod") ){
+    //if ( branchName != null && branchName.contains("prod") ){
         input "Deploy to Production?"
         // Update the Image on the Production Deployment Config B
         sh "oc set image dc/sokapi-b sokapi-b=docker-registry.default.svc:5000/jt-dev/sokapi:${prodTag} -n jt-prod"
@@ -129,8 +130,8 @@ node('jobtech-appdev'){
         openshiftDeploy depCfg: 'sokapi-a', namespace: 'jt-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
         openshiftVerifyDeployment depCfg: 'sokapi-a', namespace: 'jt-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
 
-      }else{
-        echo "[< NOT PROD BUILD >]"
-      }
+    //  }else{
+    //    echo "[< NOT PROD BUILD >]"
+    //  }
     }
 }
