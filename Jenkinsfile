@@ -61,7 +61,7 @@ node('jobtech-appdev'){
     sh "oc tag jt-dev/sokapi:latest jt-dev/sokapi:${devTag} -n jt-dev"
 
     echo "DEV ANNOTATING"
-    sh "oc annotate is jt-dev/sokapi:${devTag} dokapi.image.identifier="`date`" --overwrite"
+    //sh "oc annotate is jt-dev/sokapi:${devTag} dokapi.image.identifier="date" --overwrite"
 
     // Update the Image on the Development Deployment Config
     sh "oc set image dc/sokapi sokapi=docker-registry.default.svc:5000/jt-dev/sokapi:${devTag} -n jt-dev"
