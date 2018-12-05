@@ -80,8 +80,8 @@ node('jobtech-appdev'){
     //withPythonEnv('python3') {
       //pysh 'python --version'
     //}
-    sh "python3 -m pytest -svv -ra -m unit tests/" 
-    //// TBD
+    sh "python3 -m pytest -svv -ra -m unit tests/"
+    // TBD
   }
 
     // Run Unit Tests on Development Environment.
