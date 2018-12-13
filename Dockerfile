@@ -45,6 +45,7 @@ RUN rm -rf ./pytest_cache sokannonser/__pycache__
 RUN pwd
 RUN ls -ls
 RUN cd ..
+RUN pwd
 RUN ls -ls
 
 USER 10000
