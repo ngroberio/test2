@@ -3,7 +3,7 @@ FROM alpine:latest
 EXPOSE 8081
 
 RUN ls -ls
-RUN ls -ls
+RUN ls -ls tmp
 
 RUN apk update && apk upgrade
 
