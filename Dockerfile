@@ -12,6 +12,8 @@ RUN apk add --no-cache --update \
         git \
         curl
 
+RUN ls -ls
+
 COPY . /app
 
 COPY nginx.conf /etc/nginx/nginx.conf
