@@ -1,3 +1,5 @@
+RUN ls -ls
+
 FROM alpine:latest
 
 EXPOSE 8081
