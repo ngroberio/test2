@@ -9,7 +9,9 @@ RUN apk update && apk upgrade
 
 RUN apk add --no-cache --update supervisor uwsgi-python3 python3 nginx git curl
 
+RUN cd tmp
 RUN ls -ls
+RUN cd ..
 
 COPY . /app
 
