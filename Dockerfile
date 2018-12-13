@@ -44,6 +44,8 @@ RUN rm -rf ./pytest_cache sokannonser/__pycache__
 # RUN git log -1
 RUN pwd
 RUN ls -ls
+RUN cd ..
+RUN ls -ls
 
 USER 10000
 CMD ["/usr/bin/supervisord", "-n"]
