@@ -1,8 +1,9 @@
-RUN ls -ls
-
 FROM alpine:latest
 
 EXPOSE 8081
+
+RUN ls -ls
+RUN ls -ls
 
 RUN apk update && apk upgrade
 
