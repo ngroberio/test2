@@ -2,16 +2,9 @@ FROM alpine:latest
 
 EXPOSE 8081
 
-RUN ls -ls
-RUN ls -ls tmp
-
 RUN apk update && apk upgrade
 
 RUN apk add --no-cache --update supervisor uwsgi-python3 python3 nginx git curl
-
-RUN cd tmp
-RUN ls -ls
-RUN cd ..
 
 COPY . /app
 
@@ -19,7 +12,6 @@ COPY nginx.conf /etc/nginx/nginx.conf
 RUN rm /etc/nginx/conf.d/default.conf
 
 #cd COPY supervisord.conf /etc/supervisord.conf
-
 
 RUN mkdir -p /var/run/nginx && \
     chmod -R 777 /var/run/nginx
@@ -32,6 +24,10 @@ RUN chmod -R 775 /app && \
 RUN chmod -R 775 /var/lib/nginx && \
     chmod -R 777 /var/log/* && \
     chmod -R 777 /var/tmp/nginx
+
+
+WORKDIR /tmp
+RUN ls -ls
 
 WORKDIR /app
 
