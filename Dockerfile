@@ -4,13 +4,7 @@ EXPOSE 8081
 
 RUN apk update && apk upgrade
 
-RUN apk add --no-cache --update \
-        supervisor \
-        uwsgi-python3 \
-        python3 \
-        nginx \
-        git \
-        curl
+RUN apk add --no-cache --update supervisor uwsgi-python3 python3 nginx git curl
 
 RUN ls -ls
 
