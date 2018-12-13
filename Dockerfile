@@ -37,12 +37,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # runs unit tests with @pytest.mark.unit annotation only
 RUN python3 -m pytest -svv -m unit tests/
 RUN rm -rf ./pytest_cache sokannonser/__pycache__
-# RUN git log -1
-RUN pwd
-RUN ls -ls
-RUN cd ..
-RUN pwd
-RUN ls -ls
+RUN git log -1
 
 USER 10000
 CMD ["/usr/bin/supervisord", "-n"]
